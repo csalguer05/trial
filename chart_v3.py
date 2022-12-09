@@ -1,3 +1,11 @@
+"""
+Spaghetti plot
+
+To run:
+>>> python3 chart_v3.py name.json
+
+"""
+import sys,os
 import json
 import matplotlib.pyplot as plt 
 import numpy as np
@@ -5,7 +13,8 @@ import pandas as pd
 from mpl_toolkits.mplot3d import Axes3D
 
 #def load_data(json_file):
-with open('track-bd-td.json','r') as indata:
+json_file='%s' % sys.argv[1]
+with open(json_file,'r') as indata:
 	data = json.load(indata)
 
 name, cmmt, para, Etot, type, hop, label=data
