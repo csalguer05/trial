@@ -54,53 +54,38 @@ def states(txt):
 	return st_i
 
 def spaghetti_plt(st_i, cutoff,meas_1,meas_2):
-	#this function allows the user to take the list that is returned in the states() function. Here the user is able to input the list, the time length cuttoff, and the measurement
-	#that are being plotted. 
+	"""
+	this function allows the user to take the list that is returned in the states() function and turn it into a plot
+	"""
 
 	#the following 3 lines are initializing the plots as a local variable rather than a global one. 
 	x,y,x2,y2=[],[],[],[]
 	fig = plt.figure()
 	ax = fig.add_subplot(111)
 	for i in st_i: 
-	#this is going into the different states that contain all the traj in that respective state
-	#i in this case will be the list of the traj since the inputted list is a 2-D list with the dimesions varying within each state, however the first level.
-	#being the number of states. 
-	 
 		for j in i: 
-		#in this loop we are entering each of the lists and i should be the actual number of the trajectory
 			j = j - 1 
-			#the line above is decreasing one from the trajectory number due to the python starts indexing on 0 rather than 1
 			ts = len(para[j])
-			
-			#the if-else loop below will allow you compare the time length of the trajectory that we are one and determine whether it makes the cutoff
 			if ts <= cutoff:
-				#if the that specific traj makes the cuttoff then we are able to index into them to get the measurements for every timestep into the x & y lists
 				for k in range(ts):
 					x.append(para[j][k][0][meas_1][0])
 					y.append(para[j][k][0][meas_2][0])
-				#once the list has finished going through all the time steps we are able to plot them
 				ax.plot(x,y,marker='o',markersize=0.,linewidth=0.5,alpha=0.3)
 				x=list()
 				y=list()
 			else:
 				continue
 
-
-	#this part determines the different hopping points, since we are focus on the hopinh points landing on the S0, thus we are focusing on that state.
+	"""
+	Adds the hopping points from the ground state into the plot
+	"""
 	for i in st_i[0]:
-		#again we are subtracting one from the actual value within the list since python starts indexing at 0, rather than 1. 
 		i = i - 1
 		ts = len(para[i])
-		#determines whether that specific traj within the s0 list that have hopped and landed on the ground state sastifies the previous cuttoff. 
 		if ts <= cutoff:
-			#if it does then it index within the hop list to detemine the timesteps which the trajectory hopped in
 			ci = hop[i]
 			if len(ci)>0: 
-			#this determines whether the lists within the hop list (2-dimensional lists) are occupied, if they are then we indexed into them 
-				#as per usual we subtract one from the actual timestep that are hopped since the indexing will be off by one. 
 				ci = ci[-1] - 1 
-				#with the following lines we are able to determine the actual measurements that are in that timestep, using the same measurements that were in the original
-				#spaghetti plot.  
 				x2.append(para[i][ci][0][meas_1][0])
 				y2.append(para[i][ci][0][meas_2][0])
 			else:
@@ -109,50 +94,38 @@ def spaghetti_plt(st_i, cutoff,meas_1,meas_2):
 		else:
 			continue
 	
-	#this will actually plot the hopping point on the graph that has the random spaghetti plot as an overlay. It is a seperate from them, and acts as a layer rather than a different graph. 
 	ax.scatter(x2,y2,color='black',marker='o',s=3,zorder=3)
 
 	###THIS IS WHERE THE X AND Y LIMITS ARE PLACED###
 	ax.set_xlim(1,3.5)
 	ax.set_ylim(1,3.5)
-
-
 	plt.savefig("spaghetti.png",dpi=1200)
 
 def avg_sp(st_i, cutoff,avg_1,avg_2,meas_3):
-	#this is the same as the spaghetti_plt() function but instead there is the functionality that allows you to average two values within the things 
-	#that you are measuring. 
-	
+	"""
+	avgs two measurements and creates a spaghetti with a third measurement
+	"""
 	x,y,z,x2,y2,z2,l = [],[],[],[],[],[],[]	
 	fig = plt.figure()
 	ax = fig.add_subplot(111)
 	for i in st_i: 
-	#this is functioning as the main loop that is indexing within the state lists to pull out the data that we are trying to extract.
 		for j in i: 
-		#in this loop we are entering each of the lists and j should be the actual number of the trajectory, while i is the list (state) that is being indexed to. 
-		#we substract one from the indexed value since the indexing actually starts at zero in python. 
 			j = j - 1 
 			ts = len(para[j])
-			#this is again doing the comparison to determine whether the trajectory's length makes the cutoff or not
 			if ts <= cutoff:
 				for k in range(ts):
-					#this is appends the measurements to the different lists for all the traj's timesteps for all the traj's that made the cutoff.
 					x.append(para[j][k][0][avg_1][0])
 					y.append(para[j][k][0][avg_2][0])
 					z.append(para[j][k][0][meas_3][0])
 				
-				#the following lines does the zip function, which basically groups the different lists together, which is important for the 
-				#list comprehension tool that is used in the following lines. 
+ 				"""
+				This section calculates the averages of the two measurements 
+				"""
 				lists = [x,y]
-				#the following line converts the tuples that were outputted from the zip function into arrays that allow for array functions
 				a = [np.array(x) for x in lists]
-				#the following line then uses another list comprehension in order to determine the mean of the two lists for each value within
-				#the list, so (value 1 from list 1 + value 1 from list 2)/2
 				l = [np.mean(f) for f in zip(*a)]
 				print(len(l))	
-				#this then plots the average of the two measurements vs the third value that is obtained from the user.
 				ax.plot(l,z,marker='o',markersize=0.,linewidth=0.5,alpha=0.3)
-				#this then blanks the list so that the list can be used again for the next traj 
 				x=list()
 				y=list()
 				z=list()
@@ -162,7 +135,9 @@ def avg_sp(st_i, cutoff,avg_1,avg_2,meas_3):
 				continue
 
 
-	#hopping points here, maybe make this a function 
+	"""
+	Adds the hopping points from the ground state into the a list
+	"""
 	for i in st_i[0]:
 		i = i - 1
 		ts = len(para[i])
@@ -179,65 +154,48 @@ def avg_sp(st_i, cutoff,avg_1,avg_2,meas_3):
 		else:
 			continue
 
-	#this is then doing the same averaging that loops for the entire trajectory, but just for the hopping points.
-	#this is necessary to overlay the hopping points onto the plot that has the other traj data.
+	"""
+	Adds the hopping points from the ground state into the plot correctly as they need to avg as well
+	"""
 	lists = [x2,y2]
 	a = [np.array(x2) for x2 in lists]
 	l = [np.mean(f) for f in zip(*a)]
 	ax.scatter(l,z2,color='black',marker='o',s=3,zorder=3)
 	
 	###THIS IS WHERE THE X AND Y LIMITS ARE PLACED###
-	#ax.set_xlim(1.4,2)
-	#ax.set_ylim(90,120)
-
-
+	ax.set_xlim(1.4,2)
+	ax.set_ylim(90,120)
 	plt.savefig("avg_sp.png",dpi=1200)
 
 def filter(st_i,bond1,bond2):
-	#this is a similar function as before but instead of averaging the measurements, it actually makes a comparison in order to determine
-	#which of the bonds is longer. 
+	"""
+	Creates a plot using the a distance cutoff
+	"""
 
 	x,y,z,x2,y2,z2,l = [],[],[],[],[],[],[]
 	fig = plt.figure()
 	ax = fig.add_subplot(111)
 	print(para[464][-1][0][0][0])
 	for i in st_i: 
-	#this is going into into the states, as before in order to index into the 2-D list
 		for j in i: 
-		#here we are indexing into the individual lists that are actually hold the traj #, so j is the traj # and i is the list of states
-		#accounts for the different indexing that is occurring due to the python's indexing starting at zero.
 			j = j - 1 
 			print(j)
 			b1 = para[j][-1][0][bond1][0]
 			b2 = para[j][-1][0][bond2][0]
 			if b1 > 3.3 or b2 > 3.3:
-			#this if-else statement is accounting to determine whether that specific traj that we are one is actually hitting the cutoff. 
 				for k in range(len(para[j])):
-				#if it is then this for-loop iterates through the length of the trajectory and appends the measurements at each timestep to the
-				#different lists. 
 					x.append(para[j][k][0][bond1][0])
 					y.append(para[j][k][0][bond2][0])
-				#for i in range(len(x)):
-				#this is the comparison part that is determining which of the bonds is longer, to do this we compare the x and y lists and then append
-				#a new list with the longest of the both. This method ensures the correct dimensionalities. 
-					# if x[i] > y[i]:
-					# 	l.append(x[i])
-					# else:
-					# 	l.append(y[i])
-
-				#this then plots the data that has been determined with the other functions, the longest carbons in the l list and then the third measurement. 
 				ax.plot(x,y,marker='o',markersize=0.,linewidth=0.5,alpha=0.3)
-
-				# the next lines then clear the list for the next iteration of the code, so for the next traj. 
 				x=list()
 				y=list()
-				# z=list()
-				# l=list()
 			else:
 				continue
 
 
-	#hopping points here
+	"""
+	Adds the hopping points from the ground state into the plot
+	"""
 	for i in st_i[0]:
 		i = i - 1
 		b1 = para[i][-1][0][bond1][0]
@@ -253,78 +211,76 @@ def filter(st_i,bond1,bond2):
 
 		else:
 			continue
-
-	#determines which was the longest carbon bond for the hopping point, which takes two lists x2 and y2, and compares them to append a new one l
-	# for i in range(len(x2)):
-	# 	if x2[i] > y2[i]:
-	# 		l.append(x2[i])
-	# 	else: 
-	# 		l.append(y2[i])
-
-	#plots the surface hopping points on top of the previous plots that contain all the other trajectory data. 
 	ax.scatter(x2,y2,color='black',marker='o',s=3,zorder=3)
 	###THIS IS WHERE THE X AND Y LIMITS ARE PLACED###
-	#ax.set_xlim(1.4,2)
-	#ax.set_ylim(90,120)
+	ax.set_xlim(1.4,2)
+	ax.set_ylim(90,120)
 	plt.savefig("filtered.png",dpi=1200)
 
 
-def spaghetti_plt(st_i, cutoff,meas_1,meas_2):
-	#this function allows the user to take the list that is returned in the states() function. Here the user is able to input the list, the time length cuttoff, and the measurement
-	#that are being plotted. 
-
-	#the following 3 lines are initializing the plots as a local variable rather than a global one. 
-	x,y,x2,y2=[],[],[],[]
+def longest_sp(st_i, cutoff,comp_1,comp_2,meas_3):
+	"""
+	This compares two measurements and descides which one is bigger
+	"""
+	x,y,z,x2,y2,z2,l = [],[],[],[],[],[],[]
 	fig = plt.figure()
 	ax = fig.add_subplot(111)
 	for i in st_i: 
-	#this is going into the different states that contain all the traj in that respective state
-	#i in this case will be the list of the traj since the inputted list is a 2-D list with the dimesions varying within each state, however the first level.
-	#being the number of states. 
-	 
 		for j in i: 
-		#in this loop we are entering each of the lists and i should be the actual number of the trajectory
 			j = j - 1 
-			#the line above is decreasing one from the trajectory number due to the python starts indexing on 0 rather than 1
 			ts = len(para[j])
-			
-			#the if-else loop below will allow you compare the time length of the trajectory that we are one and determine whether it makes the cutoff
 			if ts <= cutoff:
-				#if the that specific traj makes the cuttoff then we are able to index into them to get the measurements for every timestep into the x & y lists
 				for k in range(ts):
-					x.append(para[j][k][0][meas_1][0])
-					y.append(para[j][k][0][meas_2][0])
-				#once the list has finished going through all the time steps we are able to plot them
-				ax.plot(x,y,marker='o',markersize=0.,linewidth=0.5,alpha=0.3)
+					x.append(para[j][k][0][comp_1][0])
+					y.append(para[j][k][0][comp_2][0])
+					z.append(para[j][k][0][meas_3][0])
+				"""
+				This compares the 2 intended measurements and plots them
+				"""
+				for i in range(len(x)):
+					if x[i] > y[i]:
+						l.append(x[i])
+					else:
+						l.append(y[i])
+				ax.plot(l,z,marker='o',markersize=0.,linewidth=0.5,alpha=0.3)
 				x=list()
 				y=list()
+				z=list()
+				l=list()
 			else:
 				continue
 
-
-	#this part determines the different hopping points, since we are focus on the hopinh points landing on the S0, thus we are focusing on that state.
+	"""
+	Adds the hopping points from the ground state into the plot correctly as they need to avg as well
+	"""
 	for i in st_i[0]:
-		#again we are subtracting one from the actual value within the list since python starts indexing at 0, rather than 1. 
 		i = i - 1
 		ts = len(para[i])
 		if ts <= cutoff:
 			ci = hop[i]
-			if len(ci)>0: 
+			if len(ci)>0:
 				ci = ci[-1] - 1 
-				x2.append(para[i][ci][0][meas_1][0])
-				y2.append(para[i][ci][0][meas_2][0])
+				x2.append(para[i][ci][0][comp_1][0])
+				y2.append(para[i][ci][0][comp_2][0])
+				z2.append(para[i][ci][0][meas_3][0])
 			else:
 				continue
 
 		else:
 			continue
-	
-	#this will actually plot the hopping point on the graph that has the random spaghetti plot as an overlay. It is a seperate from them, and acts as a layer rather than a different graph. 
-	ax.scatter(x2,y2,color='black',marker='o',s=3,zorder=3)
+
+	for i in range(len(x2)):
+		if x2[i] > y2[i]:
+			l.append(x2[i])
+		else: 
+			l.append(y2[i])
+	ax.scatter(l,z2,color='black',marker='o',s=3,zorder=3)
 
 	###THIS IS WHERE THE X AND Y LIMITS ARE PLACED###
-	ax.set_xlim(1,3.5)
-	ax.set_ylim(1,3.5)
+	ax.set_xlim(1.4,2)
+	ax.set_ylim(90,120)
+	plt.savefig("longest_sp.png",dpi=1200)	
+	
 print(cmmt)
 st_i = states('states.txt')
 filter(st_i,0,1)
