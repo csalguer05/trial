@@ -25,14 +25,14 @@ with open('second-batch-measurements.json','r') as indata:
 name2, cmmt2, para2, Etot2, type, hop2, label2=data2
 
 def states(txt):
-	#this function's purpose is to convert a txt file into a  list that will allow you to organize the different trajectories into their respective states
+	"""
+	Convert states.txt into a list withe the trajectories index for each state
+	states.txt - each line contains the index for a state starting at S0
+	"""
 	
-	#the following 2 lines create a dictionary, which is used to store the traj information in a more organized way and a counter which
-	#allows you to create a key with the proper state
 	dic={}
 	q = 0
 	st_i = list()	
-	#the following in the loop opens the txt file that you have create.
 	with open(txt, 'r') as infile:
 		#the following lines allows you to concacatenate a letter 's' ,representated of 'state' + the number of the state to create the keys for the dictionaries.
 		# after it break down txt file by line which allows you to place the traj into their respective keys (states)
